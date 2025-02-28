@@ -3,13 +3,13 @@ name: releases
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 0 0 * * *
+  # schedule:
+  #   - cron: 0 0 * * *
 
 jobs:
   list-manifest-versions:
     if: github.repository == 'opensearch-project/opensearch-build'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -19,7 +19,7 @@ jobs:
         run: echo "::set-output name=matrix::$(ls manifests/**/opensearch*.yml | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')"
   check:
     needs: list-manifest-versions
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         release_version: ${{ fromJson(needs.list-manifest-versions.outputs.matrix) }}
